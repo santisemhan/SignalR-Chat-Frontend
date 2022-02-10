@@ -1,0 +1,17 @@
+<div>
+  <form [formGroup]="messageForm">
+    <label for="name">Name:</label>
+    <input type="text" formControlName="author" />
+
+    <label for="name">Mensaje:</label>
+    <input type="text" formControlName="message" />
+
+    <button (click)="sendMessage()">Enviar mensaje</button>
+  </form>
+
+  <ul>
+    <li *ngFor="let message of messages">
+      {{ message.author }} - {{ message.message }}
+    </li>
+  </ul>
+</div>
