@@ -1,6 +1,7 @@
 // Angular
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { onlinePeopleMock } from '../../mocks/online-people.mock';
 import { ChatDTO } from '../../models/chat.dto';
 import { ChatService } from '../../_services/chat.service';
 
@@ -14,6 +15,9 @@ export class ChatComponent implements OnInit {
 
     public messages: ChatDTO[] = [];
     public messageForm: FormGroup;
+
+    // Mocks
+    public onlineUsers = onlinePeopleMock;
 
     constructor(
         private chatService: ChatService
@@ -48,6 +52,19 @@ export class ChatComponent implements OnInit {
             author: new FormControl('', Validators.required),
             message: new FormControl('', Validators.required)
         })
+    }
+
+    // TODO: CHANGE
+    public changeSelectedUser(id: number) {
+        let i = this.onlineUsers.findIndex(u => u.id == id)
+
+        this.onlineUsers.forEach(u => u.current = false);
+
+        this.onlineUsers[i].current = true;
+    }
+
+    public getCurrentUser() {
+        return this.onlineUsers.find(user => user.current == true)
     }
 
 }
