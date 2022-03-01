@@ -12,11 +12,22 @@ import { environment } from "../../environments/environment";
 })
 export class SignalRService {
 
+    // SignalR
     private hubConnection: HubConnection;
 
     constructor() { }
 
-    public startConnection(hub: string) {
+    /**
+     * @description
+     *	Inicia la conexion con el hub pasado por parametro
+     *
+     * @params
+     *  Nombre del hub
+     * 
+     * @return
+     *  Hub connection
+     */
+    public startConnection(hub: string): HubConnection {
         this.hubConnection = new HubConnectionBuilder()
             .withUrl(environment.API_URL + hub, {
                 skipNegotiation: true,
@@ -36,6 +47,16 @@ export class SignalRService {
     };
 
 
+    /**
+    * @description
+    *	Inicia la conexion con el hub pasado por parametro
+    *
+    * @params
+    *  Nombre del hub
+    * 
+    * @return
+    *  Hub connection
+    */
     public connectToHub(hub: string): HubConnection {
         return this.startConnection(hub);
     }

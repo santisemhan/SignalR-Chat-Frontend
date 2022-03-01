@@ -1,0 +1,10 @@
+<h1 mat-dialog-title>Welcome!</h1>
+<div mat-dialog-content [formGroup]="userDataForm">
+  <label for="name">Name: </label>
+  <input matInput id="name" type="text" formControlName="name">
+  <label for="imageURL">Image: </label>
+  <input id="imageURL" type="text" formControlName="imageURL">
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onSendData()">Aceptar</button>
+</div>

@@ -281,8 +281,8 @@ html {
   object-fit: cover;
  }
  &-title {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 25px;
+  font-weight: 400;
  }
  &-main {
   flex-grow: 1;
@@ -648,6 +648,8 @@ html {
 .connected-people {
     font-family: var(--body-font);
     margin: 5% 0 5% 5%;
+    font-size: 1.3rem;
+    font-weight: bold;
 }
 
 @media (max-width: 1120px) {
