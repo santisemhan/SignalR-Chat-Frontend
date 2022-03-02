@@ -12,6 +12,7 @@ import { ChatService } from '../../_services/chat.service';
 
 // Dialogs
 import { DialogUserInfo } from '../../components/dialogs/user-info/user-info-component';
+import { EmojiType } from '../../models/UI-enums/emojy.type';
 
 @Component({
     selector: 'app-chat',
@@ -22,7 +23,7 @@ export class ChatComponent implements OnInit {
 
     // List
     public onlineUsers: UserConnection[]
-    public messages: ChatDTO[];
+    public messages: ChatDTO[] = [];
 
     // UserData
     public connectionId: string;
@@ -100,7 +101,6 @@ export class ChatComponent implements OnInit {
 
         this.chatService.messages.subscribe(
             (message: ChatDTO) => {
-                console.log(message)
                 this.messages.push(message)
             }
         )
@@ -130,11 +130,43 @@ export class ChatComponent implements OnInit {
         let msg = new ChatDTO();
         msg.author = this.userData.name
         msg.authorImageURL = this.userData.imageURL
+        msg.dateTime = new Date();
         msg.message = this.messageForm.controls['message'].value
 
         this.chatService.sendMessage(msg)
 
         this.messageForm.controls['message'].setValue('')
+    }
+
+
+    /**
+    * @description
+    *	Envia un emoji mediante un websocket con SignalR para que lo puedan
+    *   leer los usuarios conectados.
+    */
+    public sendEmoji(emoji: EmojiType): void {
+        let msg = new ChatDTO();
+        msg.author = this.userData.name
+        msg.authorImageURL = this.userData.imageURL
+        msg.dateTime = new Date();
+        msg.imageURL = this.getEmojiImage(emoji)
+
+        this.chatService.sendMessage(msg)
+    }
+
+    /**
+    * @description
+    *	Retorna el path en el cual el emoji se encuentra alojado
+    */
+    private getEmojiImage(emoji: EmojiType): string {
+        switch (emoji) {
+            case EmojiType.Like:
+                return "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Facebook_Thumb_icon.svg/1200px-Facebook_Thumb_icon.svg.png";
+            case EmojiType.HappyFace:
+                return "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Mr._Smiley_Face.svg/2048px-Mr._Smiley_Face.svg.png";
+            default:
+                return undefined;
+        }
     }
 
     /**

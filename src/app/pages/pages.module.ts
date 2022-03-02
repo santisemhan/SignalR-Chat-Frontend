@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { ComponentsModule } from '../components/components.module';
+import { PipesModule } from '../pipes/pipes.module';
 import { ChatComponent } from './chat/chat.component';
 
 
@@ -17,7 +18,8 @@ import { ChatComponent } from './chat/chat.component';
         HttpClientModule,
         FormsModule,
         ReactiveFormsModule,
-        ComponentsModule
+        ComponentsModule,
+        PipesModule
     ],
     providers: [],
     bootstrap: []

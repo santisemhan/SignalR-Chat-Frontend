@@ -75,7 +75,6 @@ export class ChatService {
      *   Mensaje a enviar
      */
     public sendMessage(parameters: ChatDTO): void {
-        console.log(parameters)
         this.connection.send("SendMessage", parameters)
             .then(res => console.log("Message send!"))
             .catch(error => console.log("Error al enviar el mensaje!"))

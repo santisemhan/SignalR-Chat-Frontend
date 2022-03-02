@@ -28,6 +28,12 @@ export class ChatDTO {
      * @description
      *  Imagen a enviar.
      */
-    imageUrl: string
+    imageURL: string
+
+    /**
+    * @description
+    *  fecha y horario del mensaje enviado.
+    */
+    dateTime: Date
 
 }
