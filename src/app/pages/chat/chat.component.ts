@@ -13,6 +13,7 @@ import { ChatService } from '../../_services/chat.service';
 // Dialogs
 import { DialogUserInfo } from '../../components/dialogs/user-info/user-info-component';
 import { EmojiType } from '../../models/UI-enums/emojy.type';
+import { SoundService } from '../../_services/sound-ui.service';
 
 @Component({
     selector: 'app-chat',
@@ -33,7 +34,7 @@ export class ChatComponent implements OnInit {
     public messageForm: FormGroup;
 
     constructor(private chatService: ChatService,
-        public dialog: MatDialog) { }
+        public dialog: MatDialog, private soundService: SoundService) { }
 
     /**
     * @description
@@ -81,7 +82,7 @@ export class ChatComponent implements OnInit {
     public initChat(userInfo: UserConnection): void {
         this.chatService.connect(userInfo);
 
-        this.chatService.connectionId.subscribe(
+        this.chatService.connectionId$.subscribe(
             (connectionId: string) => {
                 this.connectionId = connectionId
             }
@@ -99,8 +100,11 @@ export class ChatComponent implements OnInit {
     public listenMessages(): void {
         this.chatService.listenMessages();
 
-        this.chatService.messages.subscribe(
+        this.chatService.messages$.subscribe(
             (message: ChatDTO) => {
+                if (message.authorId != this.connectionId) {
+                    this.soundService.playAudio("assets/sounds/notification.ogg");
+                }
                 this.messages.push(message)
             }
         )
@@ -114,7 +118,7 @@ export class ChatComponent implements OnInit {
     public listenConnectedPeople(): void {
         this.chatService.listenConnectedPeople();
 
-        this.chatService.onlinePeople.subscribe(
+        this.chatService.onlinePeople$.subscribe(
             (users: any) => {
                 this.onlineUsers = users
             }

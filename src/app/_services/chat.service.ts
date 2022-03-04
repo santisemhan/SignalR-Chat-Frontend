@@ -1,8 +1,9 @@
 // Angular
-import { EventEmitter, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 
 // SignalR
 import { HubConnection } from "@microsoft/signalr";
+import { Subject } from "rxjs";
 
 //Models
 import { ChatDTO } from "../models/persistence/chat.dto";
@@ -22,9 +23,9 @@ export class ChatService {
     public connection: HubConnection;
 
     // Emiters
-    public messages = new EventEmitter<ChatDTO>();
-    public onlinePeople = new EventEmitter<UserConnection[]>();
-    public connectionId = new EventEmitter<string>();
+    public messages$: Subject<ChatDTO> = new Subject<ChatDTO>();
+    public onlinePeople$: Subject<UserConnection[]> = new Subject<UserConnection[]>();
+    public connectionId$: Subject<string> = new Subject<string>();
 
     constructor(private signalRService: SignalRService) { }
 
@@ -87,7 +88,7 @@ export class ChatService {
     public listenConnectionId() {
         this.connection.on(
             "ReciveConnectionId", (connectionId: string) => {
-                this.connectionId.emit(connectionId)
+                this.connectionId$.next(connectionId)
             }
         )
     }
@@ -99,7 +100,7 @@ export class ChatService {
     public listenConnectedPeople(): void {
         this.connection.on(
             "ReciveConnectedUsers", (users: any) => {
-                this.onlinePeople.emit(users);
+                this.onlinePeople$.next(users);
             }
         )
     }
@@ -111,7 +112,7 @@ export class ChatService {
     public listenMessages(): void {
         this.connection.on(
             "ReceiveMessage", (message: ChatDTO) => {
-                this.messages.emit(message);
+                this.messages$.next(message);
             }
         )
     }

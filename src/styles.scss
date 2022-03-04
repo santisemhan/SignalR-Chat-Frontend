@@ -1,5 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
 
+/* Angular Material Override */
+.mat-dialog-container {
+  border-radius: 20px !important;
+}
+
+/* Custom CSS */
 :root {
  --body-bg-color: #e5ecef;
  --theme-bg-color: #fff;
@@ -42,5 +48,3 @@
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background-color: #e5ecef;}
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

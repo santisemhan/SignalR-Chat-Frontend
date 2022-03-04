@@ -1,10 +1,19 @@
-<h1 mat-dialog-title>Welcome!</h1>
+<h5>Create Profile</h5>
 <div mat-dialog-content [formGroup]="userDataForm">
-  <label for="name">Name: </label>
-  <input matInput id="name" type="text" formControlName="name">
-  <label for="imageURL">Image: </label>
-  <input id="imageURL" type="text" formControlName="imageURL">
-</div>
-<div mat-dialog-actions>
-  <button mat-button (click)="onSendData()">Aceptar</button>
+  <div class="img-content">
+    <input style="display: none" type="file" accept="image/png, image/gif, image/jpeg" (change)="onProfilePicChanged($event.target.files[0])"#fileInput>
+      <div class="circle" (click)="fileInput.click()">
+        <img *ngIf="lastUploadImage64; else uploadImageSVG" src="{{lastUploadImage64}}" alt="">
+        <ng-template #uploadImageSVG>
+           <svg class="icon" fill="#4A90E2" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 0h24v24H0z" fill="none"/>
+            <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/>
+           </svg>
+        </ng-template>
+      </div>
+  </div> 
+  <div class="name-content">
+    <input type="text" formControlName="name" placeholder="YOUR NAME">
+    <button (click)="onSendData()">Ok</button>
+  </div>
 </div>
