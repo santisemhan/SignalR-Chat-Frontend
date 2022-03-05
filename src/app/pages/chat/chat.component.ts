@@ -33,6 +33,8 @@ export class ChatComponent implements OnInit {
     // Forms
     public messageForm: FormGroup;
 
+    readonly allowedFormats: string[] = ['image/jpeg', 'image/png', 'image/gif']
+
     constructor(private chatService: ChatService,
         public dialog: MatDialog, private soundService: SoundService) { }
 
@@ -131,6 +133,10 @@ export class ChatComponent implements OnInit {
     *   leer los usuarios conectados.
     */
     public sendMessage(): void {
+        if (this.messageForm.invalid) {
+            return;
+        }
+
         let msg = new ChatDTO();
         msg.author = this.userData.name
         msg.authorImageURL = this.userData.imageURL
@@ -165,11 +171,35 @@ export class ChatComponent implements OnInit {
     private getEmojiImage(emoji: EmojiType): string {
         switch (emoji) {
             case EmojiType.Like:
-                return "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Facebook_Thumb_icon.svg/1200px-Facebook_Thumb_icon.svg.png";
+                return "https://assets.wprock.fr/emoji/joypixels/512/1f44d.png";
             case EmojiType.HappyFace:
-                return "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Mr._Smiley_Face.svg/2048px-Mr._Smiley_Face.svg.png";
+                return "https://iconarchive.com/download/i108215/google/noto-emoji-smileys/10002-beaming-face-with-smiling-eyes.ico";
             default:
                 return undefined;
+        }
+    }
+
+    /**
+     * @description
+     * Envia una imagen mediante un websocket con SignalR para que lo puedan
+     *   leer los usuarios conectados.
+     */
+    public sendImage(file: File): void {
+        if (this.allowedFormats.some(af => af === file.type)) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                let msg = new ChatDTO();
+                msg.author = this.userData.name
+                msg.authorImageURL = this.userData.imageURL
+                msg.dateTime = new Date();
+                msg.imageURL = reader.result as string;
+
+                this.chatService.sendMessage(msg)
+            };
+        } else {
+            // TODO: Warning in UI
+            alert("No allowed format")
         }
     }
 
