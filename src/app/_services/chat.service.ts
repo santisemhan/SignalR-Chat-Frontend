@@ -1,16 +1,13 @@
 // Angular
 import { Injectable } from "@angular/core";
+import { Observable, Subject } from "rxjs";
 
 // SignalR
-import { HubConnection } from "@microsoft/signalr";
-import { Subject } from "rxjs";
+import { Hub } from "../models/helpers/hub.model";
 
 //Models
 import { ChatDTO } from "../models/persistence/chat.dto";
 import { UserConnection } from "../models/persistence/userConnection.model";
-
-// Services
-import { SignalRService } from "./signalr.service";
 
 
 @Injectable({
@@ -20,30 +17,29 @@ import { SignalRService } from "./signalr.service";
 export class ChatService {
 
     // SignalR
-    public connection: HubConnection;
+    public _hub: Hub = new Hub();
 
     // Emiters
     public messages$: Subject<ChatDTO> = new Subject<ChatDTO>();
     public onlinePeople$: Subject<UserConnection[]> = new Subject<UserConnection[]>();
     public connectionId$: Subject<string> = new Subject<string>();
 
-    constructor(private signalRService: SignalRService) { }
+    constructor() { }
 
     /**
      * @description
      *  Se conecta al hub 'chat'
      */
-    public connectChatHub(): void {
-        this.connection = this.signalRService.connectToHub("chat");
-        this.listenConnectionId()
+    public connectChatHub(): Observable<void> {
+        return this._hub.connect("chat")
     }
 
     /**
      * @description
      *  Corta la conexion con el hub 'chat'
      */
-    public disconnectChatHub(): void {
-        this.connection.stop();
+    public disconnectChatHub(): Observable<void> {
+        return this._hub.disconnect();
     }
 
     /**
@@ -54,8 +50,9 @@ export class ChatService {
      * @param
      *  Usuario a conectar
      */
-    public connect(info: UserConnection): void {
-        this.connection.send("Connect", info)
+    public connect(info: UserConnection): Observable<void> {
+        this.listenConnectionId();
+        return this._hub.send("Connect", info);
     }
 
     /**
@@ -63,8 +60,8 @@ export class ChatService {
      *  Enviar via websocket la informacion del usuario logueado para
      *  avisar de una nueva desconexion a los usuarios en el chat. 
      */
-    public disconnect(): void {
-        this.connection.send("Disconnect")
+    public disconnect(): Observable<void> {
+        return this._hub.send("Disconnect");
     }
 
     /**
@@ -75,18 +72,16 @@ export class ChatService {
      * @param
      *   Mensaje a enviar
      */
-    public sendMessage(parameters: ChatDTO): void {
-        this.connection.send("SendMessage", parameters)
-            .then(res => console.log("Message send!"))
-            .catch(error => console.log("Error al enviar el mensaje!"))
+    public sendMessage(parameters: ChatDTO): Observable<void> {
+        return this._hub.send("SendMessage", parameters)
     }
 
     /**
-     * @description
-     *  Listener para obtener el id de la conexion con el websocket.
-     */
+    * @description
+    *  Listener para obtener el id de la conexion con el websocket.
+    */
     public listenConnectionId() {
-        this.connection.on(
+        this._hub.getConnection().on(
             "ReciveConnectionId", (connectionId: string) => {
                 this.connectionId$.next(connectionId)
             }
@@ -98,7 +93,7 @@ export class ChatService {
      *  Listener para obtener la lista de usuarios conectados.
      */
     public listenConnectedPeople(): void {
-        this.connection.on(
+        this._hub.getConnection().on(
             "ReciveConnectedUsers", (users: any) => {
                 this.onlinePeople$.next(users);
             }
@@ -110,11 +105,10 @@ export class ChatService {
      *  Listener para obtener nuevos mensajes. 
      */
     public listenMessages(): void {
-        this.connection.on(
+        this._hub.getConnection().on(
             "ReceiveMessage", (message: ChatDTO) => {
                 this.messages$.next(message);
             }
         )
     }
-
 }

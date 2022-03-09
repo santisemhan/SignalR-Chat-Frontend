@@ -1,5 +1,5 @@
 // Angular
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -43,7 +43,7 @@ export class ChatComponent implements OnInit {
     *	Se conecta al chat hub de SignalR.    
     */
     ngOnInit(): void {
-        this.chatService.connectChatHub();
+        this.chatService.connectChatHub()
 
         this.initMessageForm();
         this.openDataUserDialog();
@@ -70,26 +70,32 @@ export class ChatComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(data => {
             this.userData = data;
-            this.initChat(data);
+            this.connectUser(data);
+            this.initChat();
         });
     }
 
     /**
      * @description
-     *	Inicia el formultario del chat y conecta al usuario a la sala
+     *	Conecta al usuario a la sala
      *
      * @params
      *  Usuario conectado
      */
-    public initChat(userInfo: UserConnection): void {
+    public connectUser(userInfo: UserConnection) {
         this.chatService.connect(userInfo);
 
-        this.chatService.connectionId$.subscribe(
-            (connectionId: string) => {
-                this.connectionId = connectionId
-            }
-        )
+        this.chatService.connectionId$.subscribe({
+            next: (connectionId: string) => this.connectionId = connectionId,
+            error: (error: Error) => console.log(error)
+        })
+    }
 
+    /**
+     * @description
+     *	Inicia el formultario del chat     
+     */
+    public initChat(): void {
         this.listenMessages();
         this.listenConnectedPeople();
     }
@@ -102,14 +108,15 @@ export class ChatComponent implements OnInit {
     public listenMessages(): void {
         this.chatService.listenMessages();
 
-        this.chatService.messages$.subscribe(
-            (message: ChatDTO) => {
-                if (message.authorId != this.connectionId) {
-                    this.soundService.playAudio("assets/sounds/notification.ogg");
-                }
+        this.chatService.messages$.subscribe({
+            next: (message: ChatDTO) => {
+                // if (message.authorId != this.connectionId) {
+                //     this.soundService.playAudio("assets/sounds/notification.ogg");
+                // }
                 this.messages.push(message)
-            }
-        )
+            },
+            error: (error: Error) => console.log(error)
+        })
     }
 
     /**
@@ -120,11 +127,13 @@ export class ChatComponent implements OnInit {
     public listenConnectedPeople(): void {
         this.chatService.listenConnectedPeople();
 
-        this.chatService.onlinePeople$.subscribe(
-            (users: any) => {
+        this.chatService.onlinePeople$.subscribe({
+            next: (users: any) => {
+                console.log(users)
                 this.onlineUsers = users
-            }
-        )
+            },
+            error: (error: Error) => console.log(error)
+        })
     }
 
     /**
