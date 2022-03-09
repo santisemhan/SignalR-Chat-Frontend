@@ -129,7 +129,6 @@ export class ChatComponent implements OnInit {
 
         this.chatService.onlinePeople$.subscribe({
             next: (users: any) => {
-                console.log(users)
                 this.onlineUsers = users
             },
             error: (error: Error) => console.log(error)

@@ -89,20 +89,14 @@ export class Hub {
      * @return
      *  Observable del envio de datos por webSocket
      */
-    public send(method: string, param: any = undefined): Observable<void> {
+    public send(method: string, ...params: any[]): Observable<void> {
 
         if (!this.isConnected()) {
             throwError("The connection must be active")
         }
-        if (param) {
-            return from(this._hubConnection.send(method, param))
-                .pipe(
-                    catchError(error => throwError(`Error sending mesage to method ${method} param: ${param}`))
-                )
-        }
-        return from(this._hubConnection.send(method))
+        return from(this._hubConnection.send(method, ...params))
             .pipe(
-                catchError(error => throwError(`Error sending mesage to method ${method} param: ${param}`))
+                catchError(error => throwError(`Error sending mesage to method ${method}`))
             )
     }
 }
