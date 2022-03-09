@@ -8,7 +8,7 @@ import { ChatDTO } from '../../models/persistence/chat.dto';
 import { UserConnection } from '../../models/persistence/userConnection.model';
 
 // Services
-import { ChatService } from '../../_services/chat.service';
+import { ChatHubService } from '../../_services/hub/chat.hub.service';
 
 // Dialogs
 import { DialogUserInfo } from '../../components/dialogs/user-info/user-info-component';
@@ -35,7 +35,7 @@ export class ChatComponent implements OnInit {
 
     readonly allowedFormats: string[] = ['image/jpeg', 'image/png', 'image/gif']
 
-    constructor(private chatService: ChatService,
+    constructor(private chatHubService: ChatHubService,
         public dialog: MatDialog, private soundService: SoundService) { }
 
     /**
@@ -43,7 +43,7 @@ export class ChatComponent implements OnInit {
     *	Se conecta al chat hub de SignalR.    
     */
     ngOnInit(): void {
-        this.chatService.connectChatHub()
+        this.chatHubService.connectChatHub()
 
         this.initMessageForm();
         this.openDataUserDialog();
@@ -83,9 +83,9 @@ export class ChatComponent implements OnInit {
      *  Usuario conectado
      */
     public connectUser(userInfo: UserConnection) {
-        this.chatService.connect(userInfo);
+        this.chatHubService.connect(userInfo);
 
-        this.chatService.connectionId$.subscribe({
+        this.chatHubService.connectionId$.subscribe({
             next: (connectionId: string) => this.connectionId = connectionId,
             error: (error: Error) => console.log(error)
         })
@@ -106,9 +106,9 @@ export class ChatComponent implements OnInit {
      *  para luego "pushearlo" a la lista de mensajes.
      */
     public listenMessages(): void {
-        this.chatService.listenMessages();
+        this.chatHubService.listenMessages();
 
-        this.chatService.messages$.subscribe({
+        this.chatHubService.messages$.subscribe({
             next: (message: ChatDTO) => {
                 // if (message.authorId != this.connectionId) {
                 //     this.soundService.playAudio("assets/sounds/notification.ogg");
@@ -125,10 +125,10 @@ export class ChatComponent implements OnInit {
     *  para luego "pushearlo" a la lista de usuarios conectados.
     */
     public listenConnectedPeople(): void {
-        this.chatService.listenConnectedPeople();
+        this.chatHubService.listenConnectedPeople();
 
-        this.chatService.onlinePeople$.subscribe({
-            next: (users: any) => {
+        this.chatHubService.onlinePeople$.subscribe({
+            next: (users: UserConnection[]) => {
                 this.onlineUsers = users
             },
             error: (error: Error) => console.log(error)
@@ -151,7 +151,7 @@ export class ChatComponent implements OnInit {
         msg.dateTime = new Date();
         msg.message = this.messageForm.controls['message'].value
 
-        this.chatService.sendMessage(msg)
+        this.chatHubService.sendMessage(msg)
 
         this.messageForm.controls['message'].setValue('')
     }
@@ -169,7 +169,7 @@ export class ChatComponent implements OnInit {
         msg.dateTime = new Date();
         msg.imageURL = this.getEmojiImage(emoji)
 
-        this.chatService.sendMessage(msg)
+        this.chatHubService.sendMessage(msg)
     }
 
     /**
@@ -203,7 +203,7 @@ export class ChatComponent implements OnInit {
                 msg.dateTime = new Date();
                 msg.imageURL = reader.result as string;
 
-                this.chatService.sendMessage(msg)
+                this.chatHubService.sendMessage(msg)
             };
         } else {
             // TODO: Warning in UI
@@ -218,6 +218,6 @@ export class ChatComponent implements OnInit {
    */
     @HostListener('window:beforeunload')
     onClose(): void {
-        this.chatService.disconnect();
+        this.chatHubService.disconnect();
     }
 }

@@ -3,18 +3,18 @@ import { Injectable } from "@angular/core";
 import { Observable, Subject } from "rxjs";
 
 // SignalR
-import { Hub } from "../models/helpers/hub.model";
+import { Hub } from "../../models/helpers/hub.model";
 
 //Models
-import { ChatDTO } from "../models/persistence/chat.dto";
-import { UserConnection } from "../models/persistence/userConnection.model";
+import { ChatDTO } from "../../models/persistence/chat.dto";
+import { UserConnection } from "../../models/persistence/userConnection.model";
 
 
 @Injectable({
     providedIn: "root"
 })
 // Hacer interface para SignalR
-export class ChatService {
+export class ChatHubService {
 
     // SignalR
     public _hub: Hub = new Hub();
@@ -94,7 +94,7 @@ export class ChatService {
      */
     public listenConnectedPeople(): void {
         this._hub.getConnection().on(
-            "ReciveConnectedUsers", (users: any) => {
+            "ReciveConnectedUsers", (users: UserConnection[]) => {
                 this.onlinePeople$.next(users);
             }
         )
