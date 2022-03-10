@@ -88,12 +88,11 @@ export class ChatComponent implements OnInit {
      *  Usuario conectado
      */
     public connectUser(userInfo: UserConnection) {
-        this.chatHubService.connect(userInfo);
-
-        this.chatHubService.connectionId$.subscribe({
+        this.chatHubService.listenConnectionId().subscribe({
             next: (connectionId: string) => this.connectionId = connectionId,
             error: (error: Error) => console.log(error)
         })
+        this.chatHubService.connect(userInfo);
     }
 
     /**
@@ -111,9 +110,7 @@ export class ChatComponent implements OnInit {
      *  para luego "pushearlo" a la lista de mensajes.
      */
     public listenMessages(): void {
-        this.chatHubService.listenMessages();
-
-        this.chatHubService.messages$.subscribe({
+        this.chatHubService.listenMessages().subscribe({
             next: (message: ChatDTO) => {
                 // if (message.authorId != this.connectionId) {
                 //     this.soundService.playAudio("assets/sounds/notification.ogg");
@@ -130,7 +127,8 @@ export class ChatComponent implements OnInit {
                 }, 200)
             },
             error: (error: Error) => console.log(error)
-        })
+        });
+
     }
 
     /**
@@ -139,14 +137,12 @@ export class ChatComponent implements OnInit {
     *  para luego "pushearlo" a la lista de usuarios conectados.
     */
     public listenConnectedPeople(): void {
-        this.chatHubService.listenConnectedPeople();
-
-        this.chatHubService.onlinePeople$.subscribe({
+        this.chatHubService.listenConnectedPeople().subscribe({
             next: (users: UserConnection[]) => {
                 this.onlineUsers = users
             },
             error: (error: Error) => console.log(error)
-        })
+        });
     }
 
     /**

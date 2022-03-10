@@ -19,11 +19,6 @@ export class ChatHubService {
     // SignalR
     public _hub: Hub = new Hub();
 
-    // Emiters
-    public messages$: Subject<ChatDTO> = new Subject<ChatDTO>();
-    public onlinePeople$: Subject<UserConnection[]> = new Subject<UserConnection[]>();
-    public connectionId$: Subject<string> = new Subject<string>();
-
     constructor() { }
 
     /**
@@ -51,7 +46,6 @@ export class ChatHubService {
      *  Usuario a conectar
      */
     public connect(info: UserConnection): Observable<void> {
-        this.listenConnectionId();
         return this._hub.send("Connect", info);
     }
 
@@ -80,35 +74,23 @@ export class ChatHubService {
     * @description
     *  Listener para obtener el id de la conexion con el websocket.
     */
-    public listenConnectionId() {
-        this._hub.getConnection().on(
-            "ReciveConnectionId", (connectionId: string) => {
-                this.connectionId$.next(connectionId)
-            }
-        )
+    public listenConnectionId(): Observable<string> {
+        return this._hub.listen<string>("ReciveConnectionId")
     }
 
     /**
      * @description
      *  Listener para obtener la lista de usuarios conectados.
      */
-    public listenConnectedPeople(): void {
-        this._hub.getConnection().on(
-            "ReciveConnectedUsers", (users: UserConnection[]) => {
-                this.onlinePeople$.next(users);
-            }
-        )
+    public listenConnectedPeople(): Observable<UserConnection[]> {
+        return this._hub.listen<UserConnection[]>("ReciveConnectedUsers")
     }
 
     /**
      * @description
      *  Listener para obtener nuevos mensajes. 
      */
-    public listenMessages(): void {
-        this._hub.getConnection().on(
-            "ReceiveMessage", (message: ChatDTO) => {
-                this.messages$.next(message);
-            }
-        )
+    public listenMessages(): Observable<ChatDTO> {
+        return this._hub.listen<ChatDTO>("ReceiveMessage")
     }
 }
