@@ -1,9 +1,10 @@
 <div class="app">
  <div class="header">
-  <div class="logo">
-   <svg viewBox="0 0 513 513" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-    <path d="M256.025.05C117.67-2.678 3.184 107.038.025 245.383a240.703 240.703 0 0085.333 182.613v73.387c0 5.891 4.776 10.667 10.667 10.667a10.67 10.67 0 005.653-1.621l59.456-37.141a264.142 264.142 0 0094.891 17.429c138.355 2.728 252.841-106.988 256-245.333C508.866 107.038 394.38-2.678 256.025.05z" />
-    <path d="M330.518 131.099l-213.825 130.08c-7.387 4.494-5.74 15.711 2.656 17.97l72.009 19.374a9.88 9.88 0 007.703-1.094l32.882-20.003-10.113 37.136a9.88 9.88 0 001.083 7.704l38.561 63.826c4.488 7.427 15.726 5.936 18.003-2.425l65.764-241.49c2.337-8.582-7.092-15.72-14.723-11.078zM266.44 356.177l-24.415-40.411 15.544-57.074c2.336-8.581-7.093-15.719-14.723-11.078l-50.536 30.744-45.592-12.266L319.616 160.91 266.44 356.177z" fill="#fff" /></svg>
+  <div class="menu" (click)="toggleMenu()">
+   <svg *ngIf="!activeMenu; else closeIcon" fill="#000000" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 30 30" width="30px" height="30px"><path d="M 3 7 A 1.0001 1.0001 0 1 0 3 9 L 27 9 A 1.0001 1.0001 0 1 0 27 7 L 3 7 z M 3 14 A 1.0001 1.0001 0 1 0 3 16 L 27 16 A 1.0001 1.0001 0 1 0 27 14 L 3 14 z M 3 21 A 1.0001 1.0001 0 1 0 3 23 L 27 23 A 1.0001 1.0001 0 1 0 27 21 L 3 21 z"/></svg>
+   <ng-template #closeIcon>
+    <svg fill="#000000" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" width="24px" height="24px"><path d="M 4.7070312 3.2929688 L 3.2929688 4.7070312 L 10.585938 12 L 3.2929688 19.292969 L 4.7070312 20.707031 L 12 13.414062 L 19.292969 20.707031 L 20.707031 19.292969 L 13.414062 12 L 20.707031 4.7070312 L 19.292969 3.2929688 L 12 10.585938 L 4.7070312 3.2929688 z"/></svg>
+   </ng-template>
   </div>
   <div class="user-settings">
    <div class="settings">
@@ -17,19 +18,19 @@
   </div>
  </div>
  <div class="wrapper">
-  <div class="conversation-area">
-    <h5 class="connected-people">Connected</h5>
-    <div *ngFor="let user of onlineUsers ">
-      <div class="msg online">
-          <img class="msg-profile" src="{{user.imageURL}}" alt="" />
-          <div class="msg-detail">
-           <div class="msg-username">{{user.name}}</div>
-        </div>
-      </div>
-  </div>   
+     <div class="conversation-area" [ngStyle]="activeMenu && {'display': 'block'}">
+       <h5 class="connected-people">Connected</h5>
+       <div *ngFor="let user of onlineUsers">
+         <div class="msg online">
+             <img class="msg-profile" src="{{user.imageURL}}" alt="" />
+             <div class="msg-detail">
+              <div class="msg-username">{{user.name}}</div>
+           </div>
+         </div>
+   </div>
    <div class="overlay"></div>
   </div>
-  <div class="chat-area">
+  <div class="chat-area" #content>
    <div class="chat-area-header">
     <div class="chat-area-title">
         <div class="chat-area-title">       
@@ -46,7 +47,10 @@
           <div class="chat-msg-date">{{message.dateTime | date: 'dd-MM-yyyy h:mm a'}}</div>
          </div>
          <div class="chat-msg-content">
-          <div class="chat-msg-text" *ngIf="message.message else image">{{message.message}}</div>
+          <div class="chat-msg-text" *ngIf="message.message else image">
+            <h5 *ngIf="message.authorId !== connectionId" class="author-msg">{{message.author}}</h5>
+            {{message.message}}
+          </div>
           <ng-template #image>
               <div class="chat-msg-text">
                  <img src="{{message.imageURL}}" width="150px" height="150px">

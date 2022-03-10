@@ -33,6 +33,11 @@ export class ChatComponent implements OnInit {
     // Forms
     public messageForm: FormGroup;
 
+    //UI Mobile
+    public activeMenu: boolean = false;
+
+    @ViewChild('content') content: ElementRef;
+
     readonly allowedFormats: string[] = ['image/jpeg', 'image/png', 'image/gif']
 
     constructor(private chatHubService: ChatHubService,
@@ -114,6 +119,15 @@ export class ChatComponent implements OnInit {
                 //     this.soundService.playAudio("assets/sounds/notification.ogg");
                 // }
                 this.messages.push(message)
+                setTimeout(() => {
+                    if (message.authorId === this.connectionId) {
+                        this.content.nativeElement.scroll({
+                            top: this.content.nativeElement.scrollHeight,
+                            left: 0,
+                            behavior: 'smooth'
+                        });
+                    }
+                }, 200)
             },
             error: (error: Error) => console.log(error)
         })
@@ -209,6 +223,14 @@ export class ChatComponent implements OnInit {
             // TODO: Warning in UI
             alert("No allowed format")
         }
+    }
+
+    /**
+     * @description
+     * Togglea la apertura y el cierre del menu (UI - Mobile)
+     */
+    public toggleMenu(): void {
+        this.activeMenu = !this.activeMenu
     }
 
     /**

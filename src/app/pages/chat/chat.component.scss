@@ -55,14 +55,8 @@ html {
  flex-grow: 1;
 }
 
-.logo {
- color: var(--theme-color);
- width: 38px;
- flex-shrink: 0;
-
- svg {
-  width: 100%;
- }
+.menu {
+ display: none;
 }
 
 .user-settings {
@@ -339,8 +333,34 @@ html {
     font-weight: bold;
 }
 
+.author-msg {
+  font-weight:900; 
+  color: #0086ff;
+}
+
+::-webkit-scrollbar {
+ width: 6px;
+ border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+ background: rgba(65, 65, 65, 0.4);
+ border-radius: 10px;
+}
+
 @media (max-width: 780px) {
  .conversation-area {
-  display: none;
+  display: none;  
  }
+
+ .menu {
+    display: block;
+    color: var(--theme-color);
+    width: 38px;
+    flex-shrink: 0;
+   
+    svg {
+     width: 100%;
+    }
+   }  
 }
